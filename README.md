@@ -3,8 +3,8 @@
 Bu proje, çeşitli Türk gıda şirketlerinin web sitelerinden ürün görsellerini otomatik olarak indiren Python script'lerini içerir.
 
 ## Toplam İstatistikler
-- **4 aktif scraper**
-- **563+ görsel** başarıyla indirildi
+- **5 aktif scraper**
+- **626+ görsel** başarıyla indirildi
 - **Kategorili organizasyon**
 - **Selenium & BeautifulSoup teknolojileri**
 
@@ -21,6 +21,9 @@ TAT'ın web sitesinden (https://www.tat.com.tr/) tüm ürün kategorilerindeki g
 
 ### 4. Mutlu Makarna Scraper **48 görsel indirildi**
 Mutlu Makarna'nın web sitesinden (https://www.mutlumakarna.com.tr/) tüm makarna ürün görsellerini indirir.
+
+### 5. Kinder Scraper **63 görsel indirildi**
+Kinder'ın web sitesinden (https://www.kinder.com/tr/tr/) tüm çikolata ürün görsellerini indirir.
 
 ## Özellikler
 
@@ -60,6 +63,17 @@ Mutlu Makarna'nın web sitesinden (https://www.mutlumakarna.com.tr/) tüm makarn
 - **Couscous** - 2 adet
 - **İrmik** - 1 adet
 - **Mac & Cheese** - 1 adet
+
+### Kinder Ürünleri (63 adet)
+- **Kinder Joy** - 10 adet (En popüler)
+- **Genel** - 27 adet (Ana sayfa ve ortak görseller)
+- **Kinder Pingui** - 6 adet
+- **Kinder Surprise** - 5 adet
+- **Kinder Chocolate** - 4 adet
+- **Kinder Bueno** - 3 adet
+- **Kinder Bueno White** - 3 adet
+- **Kinder Delice** - 3 adet
+- **Kinder Süt Dilimi** - 2 adet
 
 ---
 
@@ -166,6 +180,11 @@ python tat_scraper.py
 python mutlu_makarna_scraper.py
 ```
 
+### Kinder Scraper
+```bash
+python kinder_scraper.py
+```
+
 ## Gereksinimler
 
 - Python 3.6+
@@ -183,11 +202,13 @@ scra-teksüt/
 ├── kahvedunyasi_scraper.py    # Kahve Dünyası scraper script'i
 ├── tat_scraper.py             # TAT scraper script'i (386 görsel)
 ├── mutlu_makarna_scraper.py   # Mutlu Makarna scraper script'i (48 görsel)
+├── kinder_scraper.py          # Kinder scraper script'i (63 görsel)
 ├── requirements.txt           # Python bağımlılıkları
 ├── teksut_images/            # Teksüt görselleri (129 adet)
 ├── kahvedunyasi_images/      # Kahve Dünyası görselleri (kategorili)
 ├── tat_images/               # TAT görselleri (386 adet, kategorili)
 ├── mutlu_makarna_images/     # Mutlu Makarna görselleri (48 adet, kategorili)
+├── kinder_images/            # Kinder görselleri (63 adet, kategorili)
 ├── .gitignore                # Git ignore dosyası
 └── README.md                 # Bu dosya
 ```
@@ -202,7 +223,7 @@ scra-teksüt/
 
 ## Lisans
 
-Bu proje eğitim amaçlıdır. Tüm şirketlerin (Teksüt, Kahve Dünyası, TAT, Mutlu Makarna) telif haklarına saygı gösterilmelidir.
+Bu proje eğitim amaçlıdır. Tüm şirketlerin (Teksüt, Kahve Dünyası, TAT, Mutlu Makarna, Kinder) telif haklarına saygı gösterilmelidir.
 
 ## Katkıda Bulunma
 

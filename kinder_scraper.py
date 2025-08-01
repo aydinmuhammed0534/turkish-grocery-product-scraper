@@ -1,0 +1,372 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Kinder Ürün Görselleri Çekici
+Bu script Kinder'ın web sitesindeki tüm ürün görsellerini kategorilere göre indirir.
+"""
+
+import requests
+from bs4 import BeautifulSoup
+import os
+from urllib.parse import urljoin, urlparse
+import time
+from pathlib import Path
+import mimetypes
+import json
+import re
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+
+class KinderScraper:
+    def __init__(self, base_url="https://www.kinder.com/tr/tr/urunlerimiz"):
+        self.base_url = base_url
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+        })
+        
+        # Çıktı dizini oluştur
+        self.output_dir = Path("kinder_images")
+        self.output_dir.mkdir(exist_ok=True)
+        
+        # Kinder ürün kategorileri
+        self.categories = {
+            'kinder_sut_dilimi': 'Kinder Süt Dilimi',
+            'kinder_pingui': 'Kinder Pingui',
+            'kinder_joy': 'Kinder Joy',
+            'kinder_surprise': 'Kinder Surprise',
+            'kinder_chocolate': 'Kinder Chocolate',
+            'kinder_bueno': 'Kinder Bueno',
+            'kinder_bueno_white': 'Kinder Bueno White',
+            'kinder_delice': 'Kinder Delice',
+            'genel': 'Genel'
+        }
+        
+        # Kategori dizinleri oluştur
+        for category_key in self.categories.keys():
+            category_dir = self.output_dir / category_key
+            category_dir.mkdir(exist_ok=True)
+        
+        # Kinder ürün URL'leri
+        self.product_urls = {
+            'kinder_sut_dilimi': 'https://www.kinder.com/tr/tr/kinder-sut-dilimi',
+            'kinder_pingui': 'https://www.kinder.com/tr/tr/kinder-pingui',
+            'kinder_joy': 'https://www.kinder.com/tr/tr/kinder-joy',
+            'kinder_surprise': 'https://www.kinder.com/tr/tr/kinder-surprise',
+            'kinder_chocolate': 'https://www.kinder.com/tr/tr/kinder-chocolate',
+            'kinder_bueno': 'https://www.kinder.com/tr/tr/kinder-bueno',
+            'kinder_bueno_white': 'https://www.kinder.com/tr/tr/kinder-bueno-white',
+            'kinder_delice': 'https://www.kinder.com/tr/tr/kinder-delice'
+        }
+        
+    def setup_driver(self):
+        """Chrome WebDriver'ı kurar"""
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36')
+        
+        try:
+            driver = webdriver.Chrome(options=options)
+            return driver
+        except Exception as e:
+            print(f"Chrome WebDriver kurulamadı: {e}")
+            print("Requests ile devam ediliyor...")
+            return None
+    
+    def categorize_product(self, url, alt=""):
+        """Ürünü kategoriye göre sınıflandırır"""
+        url_lower = url.lower()
+        alt_lower = alt.lower()
+        
+        # Kategori eşleştirmeleri
+        if any(word in url_lower or word in alt_lower for word in ['sut-dilimi', 'süt-dilimi', 'milk-slice']):
+            return 'kinder_sut_dilimi'
+        elif any(word in url_lower or word in alt_lower for word in ['pingui']):
+            return 'kinder_pingui'
+        elif any(word in url_lower or word in alt_lower for word in ['joy']):
+            return 'kinder_joy'
+        elif any(word in url_lower or word in alt_lower for word in ['surprise']):
+            return 'kinder_surprise'
+        elif any(word in url_lower or word in alt_lower for word in ['bueno-white', 'bueno_white']):
+            return 'kinder_bueno_white'
+        elif any(word in url_lower or word in alt_lower for word in ['bueno']):
+            return 'kinder_bueno'
+        elif any(word in url_lower or word in alt_lower for word in ['delice']):
+            return 'kinder_delice'
+        elif any(word in url_lower or word in alt_lower for word in ['chocolate']):
+            return 'kinder_chocolate'
+        else:
+            return 'genel'
+    
+    def get_page_content(self, url):
+        """Sayfanın HTML içeriğini alır"""
+        try:
+            print(f"Sayfa içeriği alınıyor: {url}")
+            response = self.session.get(url, timeout=30)
+            response.raise_for_status()
+            response.encoding = 'utf-8'
+            return response.text
+        except requests.RequestException as e:
+            print(f"Sayfa alınırken hata oluştu: {e}")
+            return None
+    
+    def extract_product_images(self, html_content, category_key):
+        """HTML içeriğinden ürün görsellerini çıkarır"""
+        soup = BeautifulSoup(html_content, 'html.parser')
+        image_data = []
+        
+        # Ürün görsel konteynerlerini bul
+        product_containers = soup.find_all(['div', 'article', 'section'], 
+                                         class_=lambda x: x and any(word in x.lower() for word in 
+                                         ['product', 'urun', 'item', 'card', 'kinder']))
+        
+        print(f"Ürün konteyneri bulundu: {len(product_containers)}")
+        
+        # Tüm img etiketlerini kontrol et
+        all_images = soup.find_all('img')
+        print(f"Toplam img etiketi: {len(all_images)}")
+        
+        for img in all_images:
+            # src özelliğini kontrol et
+            src = img.get('src')
+            alt = img.get('alt', '')
+            
+            if src and self.is_valid_product_image(src, alt):
+                full_url = urljoin('https://www.kinder.com', src)
+                detected_category = self.categorize_product(full_url, alt)
+                
+                image_data.append({
+                    'url': full_url,
+                    'alt': alt,
+                    'category': detected_category or category_key
+                })
+                print(f"Ürün görseli bulundu: {full_url}")
+            
+            # data-src özelliğini kontrol et (lazy loading)
+            data_src = img.get('data-src')
+            if data_src and self.is_valid_product_image(data_src, alt):
+                full_url = urljoin('https://www.kinder.com', data_src)
+                detected_category = self.categorize_product(full_url, alt)
+                
+                image_data.append({
+                    'url': full_url,
+                    'alt': alt,
+                    'category': detected_category or category_key
+                })
+                print(f"Lazy load ürün görseli bulundu: {full_url}")
+            
+            # srcset özelliğini kontrol et
+            srcset = img.get('srcset')
+            if srcset:
+                # srcset'ten en yüksek çözünürlüklü görseli al
+                srcset_urls = re.findall(r'(https?://[^\s,]+)', srcset)
+                for srcset_url in srcset_urls:
+                    if self.is_valid_product_image(srcset_url, alt):
+                        detected_category = self.categorize_product(srcset_url, alt)
+                        
+                        image_data.append({
+                            'url': srcset_url,
+                            'alt': alt,
+                            'category': detected_category or category_key
+                        })
+                        print(f"Srcset ürün görseli bulundu: {srcset_url}")
+        
+        # CSS background-image özelliklerini bul
+        style_elements = soup.find_all(attrs={"style": True})
+        for element in style_elements:
+            style = element.get('style', '')
+            if 'background-image' in style:
+                urls = re.findall(r'url\(["\']?([^"\']*)["\']?\)', style)
+                for url in urls:
+                    if self.is_valid_product_image(url):
+                        full_url = urljoin('https://www.kinder.com', url)
+                        detected_category = self.categorize_product(full_url)
+                        
+                        image_data.append({
+                            'url': full_url,
+                            'alt': '',
+                            'category': detected_category or category_key
+                        })
+                        print(f"CSS background ürün görseli bulundu: {full_url}")
+        
+        return image_data
+    
+    def is_valid_product_image(self, url, alt=""):
+        """URL'nin geçerli bir ürün görseli olup olmadığını kontrol eder"""
+        if not url or url.startswith('data:'):
+            return False
+        
+        # Gereksiz URL'leri filtrele
+        exclude_patterns = ['icon', 'logo', 'placeholder', 'loading', 'spinner', 'banner', 'slider', 'navigation', 'footer', 'header']
+        url_lower = url.lower()
+        alt_lower = alt.lower()
+        
+        # Exclude patterns kontrolü
+        if any(pattern in url_lower for pattern in exclude_patterns):
+            return False
+        
+        # Kinder ürünü görseli olabilecek pattern'lar
+        product_patterns = ['kinder', 'product', 'urun', 'chocolate', 'cikolata', 'joy', 'surprise', 'bueno', 'delice', 'pingui', 'jpg', 'jpeg', 'png', 'webp']
+        
+        # Görsel uzantılarını kontrol et
+        valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
+        parsed_url = urlparse(url)
+        path = parsed_url.path.lower()
+        
+        has_valid_extension = any(path.endswith(ext) for ext in valid_extensions)
+        has_product_pattern = any(pattern in url_lower or pattern in alt_lower for pattern in product_patterns)
+        
+        return has_valid_extension or has_product_pattern
+    
+    def get_filename_from_url(self, url, category):
+        """URL'den dosya adı çıkarır"""
+        parsed_url = urlparse(url)
+        filename = os.path.basename(parsed_url.path)
+        
+        # Eğer dosya adı yoksa veya uzantısı yoksa, URL'den oluştur
+        if not filename or '.' not in filename:
+            filename = f"{category}_product_{hash(url) % 10000}.jpg"
+        
+        return filename
+    
+    def download_image(self, image_data):
+        """Tek bir görseli indirir"""
+        url = image_data['url']
+        category = image_data['category']
+        filename = self.get_filename_from_url(url, category)
+        
+        try:
+            response = self.session.get(url, timeout=30, stream=True)
+            response.raise_for_status()
+            
+            # İçerik türünü kontrol et
+            content_type = response.headers.get('content-type', '')
+            if not content_type.startswith('image/'):
+                print(f"Bu URL bir görsel değil: {url} (Content-Type: {content_type})")
+                return False
+            
+            # Dosya uzantısını content-type'a göre ayarla
+            if not any(filename.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']):
+                ext = mimetypes.guess_extension(content_type.split(';')[0])
+                if ext:
+                    filename += ext
+            
+            # Kategori dizinine kaydet
+            category_dir = self.output_dir / category
+            file_path = category_dir / filename
+            
+            # Eğer dosya zaten varsa, sayı ekle
+            counter = 1
+            original_path = file_path
+            while file_path.exists():
+                stem = original_path.stem
+                suffix = original_path.suffix
+                file_path = category_dir / f"{stem}_{counter}{suffix}"
+                counter += 1
+            
+            # Dosyayı kaydet
+            with open(file_path, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            
+            print(f"İndirildi ({category}): {file_path.name}")
+            return True
+            
+        except requests.RequestException as e:
+            print(f"İndirme hatası {url}: {e}")
+            return False
+        except Exception as e:
+            print(f"Dosya kaydetme hatası {filename}: {e}")
+            return False
+    
+    def scrape_product_page(self, category_key, product_url):
+        """Belirli bir ürün sayfasını scrape eder"""
+        print(f"\nÜrün scraping: {self.categories[category_key]}")
+        print(f"URL: {product_url}")
+        
+        # Ürün sayfası içeriğini al
+        html_content = self.get_page_content(product_url)
+        if not html_content:
+            print(f"Ürün sayfası içeriği alınamadı: {category_key}")
+            return 0
+        
+        # Ürün görsellerini çıkar
+        image_data = self.extract_product_images(html_content, category_key)
+        
+        if not image_data:
+            print(f"Bu üründe görsel bulunamadı: {category_key}")
+            return 0
+        
+        print(f"Bu üründe {len(image_data)} görsel bulundu")
+        
+        # Görselleri indir
+        successful_downloads = 0
+        for i, data in enumerate(image_data, 1):
+            print(f"[{i}/{len(image_data)}] İndiriliyor: {data['url']}")
+            
+            if self.download_image(data):
+                successful_downloads += 1
+            
+            # İstekler arasında kısa bekleme
+            time.sleep(0.5)
+        
+        print(f"Ürün tamamlandı: {self.categories[category_key]}")
+        print(f"Başarılı indirme: {successful_downloads}/{len(image_data)}")
+        
+        return successful_downloads
+    
+    def scrape_all_products(self):
+        """Tüm Kinder ürünlerini scrape eder"""
+        print("Kinder Ürün Görselleri Çekici Başlatıldı")
+        print("=" * 60)
+        
+        # Ana sayfa scraping
+        print("Ana sayfa scraping...")
+        main_page_downloads = 0
+        html_content = self.get_page_content(self.base_url)
+        if html_content:
+            image_data = self.extract_product_images(html_content, 'genel')
+            for data in image_data:
+                if self.download_image(data):
+                    main_page_downloads += 1
+                time.sleep(0.5)
+        
+        print(f"Ana sayfa tamamlandı: {main_page_downloads} görsel")
+        
+        # Her ürün sayfasını scrape et
+        total_downloads = main_page_downloads
+        for category_key, product_url in self.product_urls.items():
+            downloads = self.scrape_product_page(category_key, product_url)
+            total_downloads += downloads
+            
+            # Ürünler arası bekleme
+            time.sleep(2)
+        
+        print("\n" + "=" * 60)
+        print(f"Tüm Kinder ürünleri tamamlandı!")
+        print(f"Toplam başarılı indirme: {total_downloads}")
+        print(f"Görseller '{self.output_dir}' klasörüne kategorilere göre ayrılarak kaydedildi")
+        
+        # Kategori özetini göster
+        print("\nKategori özetleri:")
+        for category_key, category_name in self.categories.items():
+            category_dir = self.output_dir / category_key
+            if category_dir.exists():
+                file_count = len(list(category_dir.glob('*')))
+                if file_count > 0:
+                    print(f"  - {category_name}: {file_count} dosya")
+
+def main():
+    """Ana fonksiyon"""
+    scraper = KinderScraper()
+    scraper.scrape_all_products()
+
+if __name__ == "__main__":
+    main()
