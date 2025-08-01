@@ -1,12 +1,12 @@
-# Web Scraper Koleksiyonu 🕷️
+# Web Scraper Koleksiyonu
 
 Bu proje, çeşitli Türk gıda şirketlerinin web sitelerinden ürün görsellerini otomatik olarak indiren Python script'lerini içerir.
 
-## 📊 **Toplam İstatistikler**
-- ✅ **3 aktif scraper**
-- 📸 **515+ görsel** başarıyla indirildi
-- 🗂️ **Kategorili organizasyon**
-- 🚀 **Selenium & BeautifulSoup teknolojileri**
+## Toplam İstatistikler
+- **4 aktif scraper**
+- **563+ görsel** başarıyla indirildi
+- **Kategorili organizasyon**
+- **Selenium & BeautifulSoup teknolojileri**
 
 ## Mevcut Scraperlar
 
@@ -16,60 +16,95 @@ Teksüt'ün ürünler sayfasından (https://teksut.com.tr/urunler/) tüm ürün 
 ### 2. Kahve Dünyası Scraper  
 Kahve Dünyası'nın web sitesinden (https://www.kahvedunyasi.com/) ürün görsellerini kategorilere ayırarak indirir.
 
-### 3. TAT Ürün Görselleri Scraper ⭐ **386 görsel indirildi!**
+### 3. TAT Ürün Görselleri Scraper **386 görsel indirildi**
 TAT'ın web sitesinden (https://www.tat.com.tr/) tüm ürün kategorilerindeki görselleri indirir.
+
+### 4. Mutlu Makarna Scraper **48 görsel indirildi**
+Mutlu Makarna'nın web sitesinden (https://www.mutlumakarna.com.tr/) tüm makarna ürün görsellerini indirir.
 
 ## Özellikler
 
-- ✅ Teksüt ürünler sayfasındaki tüm görselleri otomatik indirir
-- ✅ Görselleri kategorilere göre organize eder
-- ✅ Dosya adlarını korur ve duplikasyon önler
-- ✅ User-Agent ile güvenli web scraping
-- ✅ Hata yönetimi ve ilerleme takibi
+- Tüm ürün görsellerini otomatik indirir
+- Görselleri kategorilere göre organize eder
+- Dosya adlarını korur ve duplikasyon önler
+- User-Agent ile güvenli web scraping
+- Hata yönetimi ve ilerleme takibi
+- Selenium desteği ile dinamik içerik scraping
 
 ## İndirilen Görsel Kategorileri
 
-- 🧀 **Süzme Peynirler** - 6 çeşit
-- 🧀 **Kültürlü Peynirler** - 10 çeşit  
-- 🧀 **Klasik Peynirler** - 5 çeşit
-- 🧀 **Tost Peynirler** - 9 çeşit
-- 🧀 **Kaşar Peynirler** - 7 çeşit
-- 🧀 **Sürülebilir Peynirler** - 18 çeşit
-- 🧀 **Yöresel Peynirler** - 12 çeşit
-- 🧈 **Kaymak & Tereyağı & Krema** - 10 çeşit
-- 🥛 **UHT Sütler** - 5 çeşit
-- 🥛 **UHT Küçük Sütler** - 10 çeşit
-- 🥛 **Bag in Box Sütler** - 5 çeşit
-- 🥤 **Ayranlar** - 8 çeşit
-- 🍶 **Yoğurtlar** - 11 çeşit
-- 🧀 **Açık Şarküteri Ürünleri** - 8 çeşit
-- 🏭 **Endüstriyel Ürünler** - 6 çeşit
+### Teksüt Ürünleri (129 adet)
+- **Süzme Peynirler** - 6 çeşit
+- **Kültürlü Peynirler** - 10 çeşit  
+- **Klasik Peynirler** - 5 çeşit
+- **Tost Peynirler** - 9 çeşit
+- **Kaşar Peynirler** - 7 çeşit
+- **Sürülebilir Peynirler** - 18 çeşit
+- **Yöresel Peynirler** - 12 çeşit
+- **Kaymak & Tereyağı & Krema** - 10 çeşit
+- **UHT Sütler** - 5 çeşit
+- **UHT Küçük Sütler** - 10 çeşit
+- **Bag in Box Sütler** - 5 çeşit
+- **Ayranlar** - 8 çeşit
+- **Yoğurtlar** - 11 çeşit
+- **Açık Şarküteri Ürünleri** - 8 çeşit
+- **Endüstriyel Ürünler** - 6 çeşit
 
-**Toplam: 129 adet ürün görseli başarıyla indirildi**
+### Mutlu Makarna Ürünleri (48 adet)
+- **Klasik Ürünler** - 26 adet
+- **Kısa Kesmeler** - 7 adet (Penne, Burgu, Kelebek, Midye, Boncuk, Fiyonk, Yüksük)
+- **Uzun Kesmeler** - 4 adet (Spagetti, İnce Uzun, Orta Uzun)
+- **Çorbalık** - 3 adet (Tel Şehriye, Arpa Şehriye, Yıldız Şehriye)
+- **Sebzeli** - 2 adet
+- **Tam Buğday** - 2 adet
+- **Couscous** - 2 adet
+- **İrmik** - 1 adet
+- **Mac & Cheese** - 1 adet
 
 ---
 
-## 🍅 TAT Ürün Görselleri Scraper
+## TAT Ürün Görselleri Scraper
 
 TAT'ın resmi web sitesinden tüm ürün kategorilerindeki görselleri otomatik olarak indirir.
 
 ### Özellikler
-- 🎯 **Dinamik Menü Desteği** - Selenium ile hover menüleri handle eder
-- 📁 **Kategori Organizasyonu** - Ürünleri kategorilere göre düzenler
-- 🖼️ **Akıllı Görsel Filtreleme** - Logo, ikon gibi gereksiz görselleri filtreler
-- 🔄 **Fallback Mekanizması** - Selenium çalışmazsa manuel URL'lerle devam eder
+- **Dinamik Menü Desteği** - Selenium ile hover menüleri handle eder
+- **Kategori Organizasyonu** - Ürünleri kategorilere göre düzenler
+- **Akıllı Görsel Filtreleme** - Logo, ikon gibi gereksiz görselleri filtreler
+- **Fallback Mekanizması** - Selenium çalışmazsa manuel URL'lerle devam eder
 
-### TAT Ürün Kategorileri ✅ **İndirme Tamamlandı**
-- 🥫 **Salça** - 66 adet görsel
-- 🍅 **Domates Ürünleri** - 63 adet görsel
-- 🥫 **Soslar** - 63 adet görsel (Ketçap, Mayonez, Barbekü)
-- 🍲 **Çorba** - 66 adet görsel
-- 🥒 **Sebze Konservesi** - 63 adet görsel (Fasulye, Bezelye, Bamya)
-- 🍚 **Hazır Yemek** - 65 adet görsel (Pilav, Fasulye)
-
-**Toplam: 386 adet TAT ürün görseli başarıyla indirildi!** 🎉
+### TAT Ürün Kategorileri (386 adet)
+- **Salça** - 66 adet görsel
+- **Domates Ürünleri** - 63 adet görsel
+- **Soslar** - 63 adet görsel (Ketçap, Mayonez, Barbekü)
+- **Çorba** - 66 adet görsel
+- **Sebze Konservesi** - 63 adet görsel (Fasulye, Bezelye, Bamya)
+- **Hazır Yemek** - 65 adet görsel (Pilav, Fasulye)
 
 Diğer kategoriler (Organik, Haşlanmış, Meze, Turşu, Reçel) için de klasörler oluşturuldu ve gelecek güncellemeler için hazır.
+
+---
+
+## Mutlu Makarna Scraper
+
+Mutlu Makarna'nın resmi web sitesinden tüm makarna ürün görsellerini kategorilere göre indirir.
+
+### Özellikler
+- **Makarna Kategorileri Tanıma** - Ürünleri şekil ve tipine göre otomatik kategorize eder
+- **Hibrit Scraping** - Selenium ve BeautifulSoup teknolojilerini birlikte kullanır
+- **Görsel Kalite Kontrolü** - Sadece ürün görsellerini filtreler
+- **Hata Toleransı** - 404 hataları ve eksik görselleri atlayarak devam eder
+
+### Mutlu Makarna Kategorileri (48 adet)
+- **Klasik Ürünler** - 26 adet (Mantı, Eriştə, Charleston vb.)
+- **Kısa Kesmeler** - 7 adet (Penne, Burgu, Kelebek, Midye, Boncuk)
+- **Uzun Kesmeler** - 4 adet (Spagetti, İnce Uzun, Orta Uzun)
+- **Çorbalık** - 3 adet (Tel Şehriye, Arpa Şehriye, Yıldız Şehriye)
+- **Sebzeli Makarnalar** - 2 adet
+- **Tam Buğday** - 2 adet
+- **Couscous** - 2 adet
+- **İrmik** - 1 adet
+- **Mac & Cheese** - 1 adet
 
 ### Kurulum
 
@@ -126,26 +161,34 @@ python kahvedunyasi_scraper.py
 python tat_scraper.py
 ```
 
+### Mutlu Makarna Scraper
+```bash
+python mutlu_makarna_scraper.py
+```
+
 ## Gereksinimler
 
 - Python 3.6+
 - requests
 - beautifulsoup4
 - lxml
-- selenium (TAT scraper için)
-- ChromeDriver (TAT scraper için)
+- selenium (TAT ve Mutlu Makarna scraper'ları için)
+- ChromeDriver (TAT ve Mutlu Makarna scraper'ları için)
 
 ## Dosya Yapısı
 
 ```
 scra-teksüt/
-├── teksut_image_scraper.py    # Teksüt scraper script'i
+├── teksut_image_scraper.py    # Teksüt scraper script'i (129 görsel)
 ├── kahvedunyasi_scraper.py    # Kahve Dünyası scraper script'i
-├── tat_scraper.py             # TAT scraper script'i (YENİ)
+├── tat_scraper.py             # TAT scraper script'i (386 görsel)
+├── mutlu_makarna_scraper.py   # Mutlu Makarna scraper script'i (48 görsel)
 ├── requirements.txt           # Python bağımlılıkları
 ├── teksut_images/            # Teksüt görselleri (129 adet)
 ├── kahvedunyasi_images/      # Kahve Dünyası görselleri (kategorili)
-├── tat_images/               # TAT görselleri (386 adet, kategorili) ✅
+├── tat_images/               # TAT görselleri (386 adet, kategorili)
+├── mutlu_makarna_images/     # Mutlu Makarna görselleri (48 adet, kategorili)
+├── .gitignore                # Git ignore dosyası
 └── README.md                 # Bu dosya
 ```
 
@@ -159,7 +202,7 @@ scra-teksüt/
 
 ## Lisans
 
-Bu proje eğitim amaçlıdır. Tüm şirketlerin (Teksüt, Kahve Dünyası, TAT) telif haklarına saygı gösterilmelidir.
+Bu proje eğitim amaçlıdır. Tüm şirketlerin (Teksüt, Kahve Dünyası, TAT, Mutlu Makarna) telif haklarına saygı gösterilmelidir.
 
 ## Katkıda Bulunma
 
